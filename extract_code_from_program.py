@@ -5,7 +5,6 @@ import csv
 import builtins
 import argparse
 
-# 收集 Python 内置函数名列表
 builtin_functions = set(dir(builtins))
 
 class FunctionCallVisitor(ast.NodeVisitor):
@@ -13,7 +12,6 @@ class FunctionCallVisitor(ast.NodeVisitor):
         self.calls = set()
 
     def visit_Call(self, node):
-        # 支持嵌套属性调用 a.b.c -> "a.b.c"
         if isinstance(node.func, ast.Name):
             self.calls.add(node.func.id)
         elif isinstance(node.func, ast.Attribute):
@@ -30,9 +28,6 @@ class FunctionCallVisitor(ast.NodeVisitor):
 
 
 def extract_functions_and_triples(file_path):
-    """
-    提取指定 Python 文件中的所有函数源码与调用三元组。
-    """
     with open(file_path, 'r', encoding='utf-8') as f:
         source = f.read()
 
@@ -67,9 +62,6 @@ def extract_functions_and_triples(file_path):
 
 
 def process_directory(input_dir):
-    """
-    主处理函数：遍历目录，生成函数定义 JSON 与函数调用三元组 CSV。
-    """
     json_output = './process/program.json'
     csv_output = './process/knowledge_database.csv'
 
@@ -90,14 +82,11 @@ def process_directory(input_dir):
                 except Exception as e:
                     print(f"Error in {file_path}：{e}")
 
-    # 创建输出目录
     os.makedirs('./process', exist_ok=True)
 
-    # 写入 JSON
     with open(json_output, 'w', encoding='utf-8') as jf:
         json.dump(all_functions, jf, indent=2, ensure_ascii=False)
 
-    # 写入 CSV
     with open(csv_output, 'w', newline='', encoding='utf-8') as cf:
         writer = csv.writer(cf)
         writer.writerow(['caller', 'relation', 'callee'])
@@ -111,4 +100,5 @@ def main():
     process_directory(args.input_dir)
 
 if __name__ == '__main__':
+
     main()

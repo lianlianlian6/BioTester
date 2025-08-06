@@ -10,13 +10,11 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 import argparse
 
-# === 默认路径配置 ===
-BASE_MODEL = '/root/autodl-tmp/code_summarize_20250222/DeepSeek-R1-Distill-Llama-8B'
-ADAPTER_PATH = '/root/autodl-tmp/code_summarize_20250222/output/0415'
+BASE_MODEL = 'your_path/DeepSeek-R1-Distill-Llama-8B'
+ADAPTER_PATH = 'your_path/output/0415'
 JSON_PATH = './process/program.json'
-TOP_K = 4  # 返回前 K 条句子
+TOP_K = 4  
 
-# === 加载模型和 tokenizer ===
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, local_files_only=True)
 base_model = AutoModelForCausalLM.from_pretrained(BASE_MODEL, local_files_only=True)
 model = PeftModel.from_pretrained(base_model, ADAPTER_PATH, local_files_only=True)
@@ -105,3 +103,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     enrich_program(args.folder_path)
+

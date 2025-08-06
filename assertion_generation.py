@@ -5,12 +5,9 @@ import multiprocessing
 from tqdm import tqdm
 
 def execute_code(code, testcase):
-    """在子进程中执行一段代码，返回执行结果"""
     local_env = {}
     try:
-        # 先执行函数定义
         exec(code, {}, local_env)
-        # 再执行testcase
         result = eval(testcase, {}, local_env)
         return ("success", repr(result))
     except Exception as e:
@@ -18,7 +15,6 @@ def execute_code(code, testcase):
 
 
 def run_with_timeout(code, testcase, timeout=10):
-    """设置子进程执行，防止死循环"""
     with multiprocessing.Pool(1) as pool:
         result = pool.apply_async(execute_code, (code, testcase))
         try:
@@ -30,7 +26,6 @@ def run_with_timeout(code, testcase, timeout=10):
 
 
 def run_code_and_collect_assertions(code, testcase_block):
-    """对每一条用例，执行并生成断言"""
     assertions = []
 
     for line in testcase_block.strip().split('\n'):
@@ -88,9 +83,10 @@ def process_json_generate_assertions(input_json, output_json, num_entries=None, 
 
 
 if __name__ == "__main__":
-    multiprocessing.set_start_method('spawn')  # Windows 必须加
+    multiprocessing.set_start_method('spawn')  
     input_json = "./process/program.json"
     output_json = "./process/program.json"
     print("🧠 Starting oracle generation...")
     process_json_generate_assertions(input_json, output_json, num_entries=None, max_workers=5)
+
     print("✅ Oracle generation completed.")

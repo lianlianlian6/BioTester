@@ -6,13 +6,9 @@ import time
 import concurrent.futures
 import re
 
-openai.api_base = "https://api.openai.com/v1"
-openai.api_key = 'sk-proj-2LNi6Z2yUWZxmFmsA7LiT3BlbkFJAhTfefJ0NcOwsypFqlFe'
-os.environ['http_proxy'] = 'http://127.0.0.1:7890/pac'
-os.environ['https_proxy'] = 'http://127.0.0.1:7890/pac'
+openai.api_key = 'your_api_key'
 
 def extract_python_code(text):
-    """提取代码内容"""
     match = re.search(r"```python(.*?)```", text, re.DOTALL)
     if match:
         return match.group(1).strip()
@@ -71,7 +67,7 @@ def process_single_generation(idx_program):
     if description:
         generated_code = generate_function_code(description, code)
         program["generation"] = generated_code
-        time.sleep(1)  # 控制频率，防止被限速
+        time.sleep(1) 
     return idx, program
 
 
@@ -134,9 +130,8 @@ def process_single_generation_with_calls(idx_program):
     generation = program.get("generation", "")
     if generation:
         function_calls = generate_test_calls(generation)
-        # 把生成的函数调用语句保存到 testcase 字段中
         program["testcase"] = function_calls
-        time.sleep(1)  # 控制频率
+        time.sleep(1)  
     return idx, program
 
 def process_json_add_testcalls(input_json, output_json, num_entries=None, max_workers=5):
@@ -167,4 +162,5 @@ if __name__ == "__main__":
     process_json_add_generation(input_json, output_json, num_entries=None, max_workers=5)
     print("🧠 Starting test case generation...")
     process_json_add_testcalls(input_json, output_json, num_entries=None, max_workers=5)
+
     print("✅ Test case generation completed.")

@@ -7,22 +7,13 @@ import concurrent.futures
 import re
 import csv
 
-# === OpenAI API 设置 ===
-openai.api_base = "https://api.openai.com/v1"
-openai.api_key = 'sk-proj-2LNi6Z2yUWZxmFmsA7LiT3BlbkFJAhTfefJ0NcOwsypFqlFe'
-
-# 如果你使用代理访问
-os.environ['http_proxy'] = 'http://127.0.0.1:7890/pac'
-os.environ['https_proxy'] = 'http://127.0.0.1:7890/pac'
-
+openai.api_key = 'your_api_key'
 
 def extract_function_name(code):
-    """提取函数名（假设为 def 函数）"""
     match = re.search(r'def\s+([a-zA-Z_]\w*)\s*\(', code)
     return match.group(1) if match else None
 
 def load_knowledge_graph(kg_path):
-    """加载知识图谱"""
     call_map = {}
     with open(kg_path, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
@@ -34,7 +25,6 @@ def load_knowledge_graph(kg_path):
     return call_map
 
 def build_funcname_to_text_map(json_path):
-    """从 program.json 构建函数名 -> text 映射"""
     with open(json_path, 'r', encoding='utf-8') as f:
         program_data = json.load(f)
 
@@ -46,7 +36,6 @@ def build_funcname_to_text_map(json_path):
     return fn2text
 
 def collect_related_text(code):
-    """为每个样本增加 related_functions 字段"""
     fn = extract_function_name(code)
     results = []
 
@@ -59,8 +48,6 @@ def collect_related_text(code):
                 })
     return results
 
-
-# === 步骤1：通过意图和文本查找补充背景信息 ===
 def find_most_relevant_text(code, intention, rag_texts, related_information, retries=5, delay=5):
     formatted_related_info = "\n".join(
         f"Function: {item['function']}\nText: {item['text']}" for item in related_information
@@ -131,7 +118,6 @@ def process_json_add_supple(input_json, output_json, num_entries=None, max_worke
     with open(output_json, 'w', encoding='utf-8') as f:
         json.dump(programs, f, ensure_ascii=False, indent=2)
 
-# === 步骤2：基于补充信息生成伪代码描述 ===
 def generate_description(supplementary, retries=5, delay=5):
     prompt = (
         "You are an expert in algorithm design.\n\n"
@@ -195,7 +181,6 @@ def process_json_add_description(input_json, output_json, num_entries=None, max_
     with open(output_json, 'w', encoding='utf-8') as f:
         json.dump(programs, f, ensure_ascii=False, indent=2)
 
-# === 主入口 ===
 if __name__ == "__main__":
     input_json = "./process/program.json"
     output_json = "./process/program.json"
@@ -210,3 +195,4 @@ if __name__ == "__main__":
     process_json_add_description(input_json, output_json, num_entries=None, max_workers=5)
 
     print("✅ Detail generation completed.")
+

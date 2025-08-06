@@ -8,14 +8,12 @@ import ast
 from peft import PeftModel
 import re
 
-# === 默认路径配置 ===
-BASE_MODEL = '/root/autodl-tmp/code_summarize_20250222/DeepSeek-R1-Distill-Llama-8B'
-ADAPTER_PATH = '/root/autodl-tmp/code_summarize_20250222/output/0415'
+BASE_MODEL = 'your_path/DeepSeek-R1-Distill-Llama-8B'
+ADAPTER_PATH = 'your_path/output/0415'
 INPUT_PATH = './process/program.json'
 KG_PATH = './process/knowledge_database.csv'
-OUTPUT_PATH = INPUT_PATH  # 可改为 './process/program_with_intention.json' 以保留原始文件
+OUTPUT_PATH = INPUT_PATH  
 
-# === 加载模型和 tokenizer ===
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, local_files_only=True)
 base_model = AutoModelForCausalLM.from_pretrained(BASE_MODEL, local_files_only=True)
 model = PeftModel.from_pretrained(base_model, ADAPTER_PATH, local_files_only=True)
@@ -25,9 +23,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 def generate_intention(code, max_new_tokens=128):
-    """
-    使用模型为函数代码生成意图摘要
-    """
     prompt = f"Please summarize the intent of the given code as concisely as possible: {code}"
     inputs = tokenizer(prompt, return_tensors="pt", truncation=True).to(device)
     input_ids = inputs["input_ids"]
@@ -90,3 +85,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

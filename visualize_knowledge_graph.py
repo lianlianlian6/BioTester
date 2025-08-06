@@ -4,7 +4,6 @@ import os
 import builtins
 
 def visualize_knowledge_graph():
-    # === 配置参数 ===
     csv_path = './process/knowledge_database.csv'
     output_dir = './process'
 
@@ -14,7 +13,6 @@ def visualize_knowledge_graph():
         print(f"[Error] CSV file not found: {csv_path}")
         return
 
-    # === 读取数据 ===
     df = pd.read_csv(csv_path)
     sub_df = df
 
@@ -29,7 +27,6 @@ def visualize_knowledge_graph():
     builtin_funcs = set(dir(builtins))
     aims_related_nodes = set()
 
-    # === 构建节点与边 ===
     for _, row in sub_df.iterrows():
         caller = str(row['caller']) if 'caller' in row else str(row['subject'])
         callee = str(row['callee']) if 'callee' in row else str(row['object'])
@@ -82,10 +79,10 @@ def visualize_knowledge_graph():
 
         net.add_edge(caller, callee, label=relation, color=edge_color)
 
-    # === 输出 HTML 图谱 ===
     html_path = os.path.join(output_dir, f"Knowledge_Graph.html")
     net.write_html(html_path)
     print(f"[✓] Knowledge graph generated: {html_path}")
 
 if __name__ == '__main__':
     visualize_knowledge_graph()
+

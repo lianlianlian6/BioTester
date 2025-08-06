@@ -2,7 +2,7 @@
 
 # README
 
-This project provides a multi-stage pipeline for analyzing and enhancing the functions within a target software system. The workflow includes function extraction, intention summarization, knowledge graph construction, semantic alignment, assertion generation, and bug detection. Each step is implemented as a standalone Python script.
+BioTester provides a multi-stage pipeline for analyzing and enhancing the functions within a target software system. The workflow includes function extraction, intention summarization, knowledge graph construction, semantic alignment, assertion generation, and bug detection. Each step is implemented as a standalone Python script.
 
 ## 🧭 Workflow Overview
 
@@ -149,3 +149,4 @@ Please set the following variables before execution:
 * This pipeline assumes a function-level granularity for unit analysis.
 * All outputs are structured and stored for easy inspection and downstream evaluation.
 * The OpenAI API is used for several tasks and requires an active API key.
+

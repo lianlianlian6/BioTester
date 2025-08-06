@@ -8,11 +8,8 @@ import re
 import traceback
 import multiprocessing
 
-openai.api_base = "https://api.openai.com/v1"
-openai.api_key = 'sk-proj-2LNi6Z2yUWZxmFmsA7LiT3BlbkFJAhTfefJ0NcOwsypFqlFe'
-os.environ['http_proxy'] = 'http://127.0.0.1:7890/pac'
-os.environ['https_proxy'] = 'http://127.0.0.1:7890/pac'
-# Function to generate complete Python code with assertions based on the assertion content
+openai.api_key = 'your-api-key'
+
 def generate_code_with_assertions(test_program, assertion, retries=5, delay=5):
     prompt = (
         "You are an expert Python programmer.\n"
@@ -54,7 +51,6 @@ def generate_code_with_assertions(test_program, assertion, retries=5, delay=5):
 
 # Function to extract the Python code from the response
 def extract_python_code(text):
-    """提取代码内容"""
     match = re.search(r"```python(.*?)```", text, re.DOTALL)
     if match:
         return match.group(1).strip()
@@ -103,9 +99,7 @@ def process_json_add_assertions(input_json, output_json, num_entries=None, max_w
     with open(output_json, 'w', encoding='utf-8') as f:
         json.dump(programs, f, ensure_ascii=False, indent=2)
 
-#统计testcase准确性情况
 def run_code_in_process(code: str, return_dict):
-    """在子进程中执行代码，并统计断言执行情况"""
     failed = 0
     total = 0
     function_lines = []
@@ -140,7 +134,6 @@ def run_code_in_process(code: str, return_dict):
 
 
 def safe_assert_check(code: str, timeout=20):
-    """使用子进程安全执行代码，防止死循环"""
     manager = multiprocessing.Manager()
     return_dict = manager.dict()
     p = multiprocessing.Process(target=run_code_in_process, args=(code, return_dict))
@@ -149,13 +142,11 @@ def safe_assert_check(code: str, timeout=20):
 
     if p.is_alive():
         p.terminate()
-        return -1, -1  # 表示超时
+        return -1, -1  
     return return_dict.get("total", 0), return_dict.get("failed", 0)
 
 
 def run_sample_with_timeout(program, timeout=10):
-    """ 执行一个程序并捕获其输出，同时设置超时 """
-
     try:
         exec_test_code = program.get("exec_test_code", "")
         if exec_test_code:
@@ -178,7 +169,6 @@ def run_sample_with_timeout(program, timeout=10):
 
 
 def process_assert_stat(input_json, output_json, timeout=20):
-    """顺序处理每个程序，带断点续跑功能"""
     with open(input_json, 'r', encoding='utf-8') as f:
         input_programs = json.load(f)
 
@@ -194,7 +184,6 @@ def process_assert_stat(input_json, output_json, timeout=20):
     for idx in tqdm(range(total), desc="Sequentially checking assertions"):
         program = processed_programs[idx]
         processed_programs[idx] = run_sample_with_timeout(program, timeout)
-        # 实时保存中间结果
         with open(output_json, 'w', encoding='utf-8') as f_out:
             json.dump(processed_programs, f_out, ensure_ascii=False, indent=2)
 
@@ -206,4 +195,5 @@ if __name__ == "__main__":
     print("🧠 Starting testing...")
     process_json_add_assertions(input_json, output_json, num_entries=None, max_workers=5)
     process_assert_stat(input_json, output_json, timeout=20)
+
     print("✅ All steps completed.")
